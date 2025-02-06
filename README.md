@@ -2,7 +2,7 @@
 
 <div align="center">
 
-# 🌿 **Easy Payment QR Code Generator**  
+# ⚡ **Easy Payment QR Code Generator**  
 
 </div>
 
@@ -43,7 +43,11 @@ The **Easy Payment QR Code Generator** is a **simple, mobile-friendly** web appl
 ## 📂 **Folder Structure**  
 </div>
 
-/Easy-Payment-QR-Code-Generator │── index.html       # Main webpage │── README.md        # Project documentation
+/Easy-Payment-QR-Code-Generator 
+
+│── index.html       # Main webpage
+
+│── README.md        # Project documentation
 
 ---
 
@@ -95,5 +99,5 @@ No installation required! Just open the index.html file in any modern browser.
 © 2025 Mithilesh Yadav. All Rights Reserved. 🚀
 
 </div>
-```
+
 ---
