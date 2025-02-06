@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Easy UPI Payment QR Generator</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+            padding: 0;
+            margin: 0;
+        }
+
+        .content-wrapper {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            flex-grow: 1;
+            width: 100%;
+            padding-bottom: 50px; /* Extra padding for mobile footer */
+            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 450px;
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        h2 {
+            color: #333;
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .app-name {
+            font-size: 28px;
+            font-weight: 700;
+            color: #0073b1;
+            margin-bottom: 10px;
+        }
+
+        input, button {
+            width: 100%;
+            padding: 12px;
+            margin: 12px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #0073b1;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #005580;
+        }
+
+        #qrContainer {
+            margin-top: 20px;
+            display: none;
+            text-align: center;
+        }
+
+        #downloadBtn {
+            display: none;
+            margin-top: 10px;
+            background: #28a745;
+        }
+
+        #downloadBtn:hover {
+            background: #218838;
+        }
+
+        footer {
+            position: relative;
+            text-align: center;
+            font-size: 14px;
+            color: #aaa;
+            padding: 10px 0;
+            width: 100%;
+            margin-top: 50px;
+        }
+
+        footer a {
+            color: #0073b1;
+            text-decoration: none;
+        }
+
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        @media screen and (max-width: 768px) {
+            .container {
+                width: 95%;
+                max-width: 400px;
+            }
+
+            footer {
+                position: fixed;
+                bottom: 0;
+                background-color: #fff;
+                width: 100%;
+                box-shadow: 0px -5px 10px rgba(0, 0, 0, 0.1);
+            }
+        }
+    </style>
+
+    <!-- Include QR Code Styling Library -->
+    <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.5.0/lib/qr-code-styling.min.js"></script>
+</head>
+<body>
+
+    <div class="content-wrapper">
+        <div class="container">
+            <!-- App Name/Title -->
+            <div class="app-name">Easy UPI Payment QR Generator</div>
+            
+            <p>Generate Your UPI Payment QR Code</p>
+
+            <!-- Input Fields -->
+            <input type="text" id="upiID" placeholder="Enter UPI ID (e.g., yourupi@upi)" required>
+            <input type="number" id="amount" placeholder="Enter Amount (Optional)">
+            <input type="text" id="message" placeholder="Enter Payment Message (Optional)">
+
+            <!-- Generate QR Button -->
+            <button onclick="generateQR()">Generate QR Code</button>
+
+            <!-- QR Code Display -->
+            <div id="qrContainer"></div>
+
+            <!-- Download Button -->
+            <button id="downloadBtn" onclick="downloadQR()">Download QR Code</button>
+        </div>
+    </div>
+
+    <footer id="footer">
+        <p>&copy; 2025 All Rights Reserved | <a href="#">Mithilesh Yadav</a></p>
+    </footer>
+
+    <script>
+        let qrCode;
+
+        function generateQR() {
+            let upiID = document.getElementById("upiID").value.trim();
+            let amount = document.getElementById("amount").value.trim();
+            let message = document.getElementById("message").value.trim();
+
+            if (upiID === "") {
+                alert("Please enter a valid UPI ID");
+                return;
+            }
+
+            // Create UPI Payment URL
+            let upiURL = `upi://pay?pa=${upiID}&pn=UPI%20Payment`;
+            if (amount) upiURL += `&am=${amount}`;
+            if (message) upiURL += `&tn=${encodeURIComponent(message)}`;
+            upiURL += "&cu=INR";
+
+            // Show QR Container & Download Button
+            document.getElementById("qrContainer").style.display = "block";
+            document.getElementById("downloadBtn").style.display = "block";
+
+            // Clear previous QR Code
+            document.getElementById("qrContainer").innerHTML = '';
+
+            // Create QR Code
+            qrCode = new QRCodeStyling({
+                width: 300,
+                height: 300,
+                type: "svg",
+                data: upiURL,
+                dotsOptions: {
+                    color: "#000",
+                    type: "rounded"
+                },
+                backgroundOptions: {
+                    color: "#fff",
+                }
+            });
+
+            // Append QR Code to container
+            qrCode.append(document.getElementById("qrContainer"));
+        }
+
+        function downloadQR() {
+            if (!qrCode) {
+                alert("Generate a QR code first!");
+                return;
+            }
+            qrCode.download({ name: "UPI_QR_Code", extension: "png" });
+        }
+    </script>
+
+</body>
+</html>
