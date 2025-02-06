@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,31 +6,32 @@
     <title>⚡ Easy Payment QR Code Generator</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            scroll-behavior: smooth;
         }
 
         body {
             font-family: 'Poppins', sans-serif;
             background: linear-gradient(135deg, #A8E6CF, #DCEDC1);
             color: #333;
-            width: 100%;
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
-            scroll-behavior: smooth;
+            width: 100%;
         }
 
         nav {
             position: fixed;
             top: 0;
             width: 100%;
-            background: #79C7C5;
+            background: #00796B;
             padding: 12px;
             text-align: center;
             z-index: 1000;
@@ -55,13 +55,11 @@
             box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.2);
             margin: 80px auto 20px;
             text-align: center;
-            color: #333;
         }
 
         h1, h2 {
             color: #00796B;
             font-weight: 700;
-            text-align: center;
         }
 
         .content {
@@ -95,6 +93,25 @@
 
         button:hover {
             background: #004D40;
+        }
+
+        #qrcode {
+            margin: 20px auto;
+            padding: 10px;
+            background: white;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .download-btn {
+            background: #10b981;
+            display: none;
+        }
+
+        .download-btn:hover {
+            background: #059669;
         }
 
         footer {
@@ -136,7 +153,6 @@
                 font-size: 14px;
             }
         }
-
     </style>
 </head>
 <body>
@@ -150,8 +166,8 @@
     </nav>
 
     <div class="section" id="home">
-        <h1>⚡ UPI QR Code Generator</h1>
-        <p>📲 Generate secure UPI QR Codes with a calming design.</p>
+        <h1>⚡ Easy Payment QR Code Generator</h1>
+        <p>📲 Generate secure UPI QR Codes quickly and easily.</p>
     </div>
 
     <div class="section" id="features">
@@ -168,10 +184,12 @@
 
     <div class="container">
         <h2>🔗 Generate Your UPI QR Code</h2>
-        <input type="text" id="upiID" placeholder="💳 Enter UPI ID (e.g., yourupi@upi)">
+        <input type="text" id="upiId" placeholder="💳 Enter UPI ID (e.g., yourupi@upi)">
         <input type="number" id="amount" placeholder="💰 Enter Amount (Optional)">
         <input type="text" id="message" placeholder="📝 Enter Payment Message (Optional)">
-        <button>🖼️ Generate QR Code</button>
+        <button onclick="generateQR()">🖼️ Generate QR Code</button>
+        <div id="qrcode"></div>
+        <button class="download-btn" onclick="downloadQR()">📥 Download QR Code</button>
     </div>
 
     <div class="section" id="howitworks">
@@ -203,6 +221,67 @@
     </footer>
 
     <div class="scroll-top" onclick="scrollToTop()">⬆</div>
+
+    <script>
+    //qr generation 
+        function generateQR()   {
+  const upiId = document.getElementById('upiId').value.trim();
+  const amount = document.getElementById('amount').value.trim();
+  const message = document.getElementById('message').value.trim();
+
+  if (!upiId.includes('@')) {
+    alert('❗ Please enter a valid UPI ID!');
+    return;
+  }
+
+  let upiURL = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=Recipient`;
+  if (amount) upiURL += `&am=${amount}`;
+  if (message) upiURL += `&tn=${encodeURIComponent(message)}`;
+  upiURL += "&cu=INR";
+
+  document.getElementById('qrcode').innerHTML = '';
+  qrCodeInstance = new QRCode(document.getElementById('qrcode'), {
+    text: upiURL,
+    width: 256,
+    height: 256,
+    colorDark: "#000000",
+    colorLight: "#ffffff",
+    correctLevel: QRCode.CorrectLevel.H
+  });
+
+  document.querySelector('.download-btn').style.display = 'block';
+}
+//download funtion
+function downloadQR() {
+            const qrCanvas = document.querySelector('#qrcode canvas');
+            if (!qrCanvas) {
+                alert('⚠️ Generate a QR code first!');
+                return;
+            }
+
+            const qrSize = 1024;
+            const margin = qrSize * 0.25;
+            const canvasSize = qrSize + (2 * margin);
+
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = canvasSize;
+            tempCanvas.height = canvasSize;
+            const ctx = tempCanvas.getContext('2d');
+
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvasSize, canvasSize);
+            ctx.drawImage(qrCanvas, margin, margin, qrSize, qrSize);
+
+            const link = document.createElement('a');
+            link.download = 'UPI_QR_Code.png';
+            link.href = tempCanvas.toDataURL('image/png', 1.0);
+            link.click();
+        }
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
 
 </body>
 </html>
